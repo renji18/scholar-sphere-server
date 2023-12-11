@@ -34,8 +34,7 @@ export class AuthService {
       registerData?.email,
     );
 
-    if (userNameSearch)
-      throw new UnauthorizedException('Username already exists');
+    if (userNameSearch) throw new UnauthorizedException('Username exists');
     if (emailSearch) throw new UnauthorizedException('Email already exists');
 
     const password = registerData?.password;
