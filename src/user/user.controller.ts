@@ -1,13 +1,13 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Request } from '@nestjs/common';
 import { UserService } from './user.service';
+import { Request as ExpressRequest } from 'express';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('/')
-  findOne(@Param('id') id: string): string {
-    console.log(id);
-    return `This action returns a #${id} user`;
+  @Get()
+  getProfile(@Request() req: ExpressRequest) {
+    return this.userService.getUser(req['user']['username']);
   }
 }
