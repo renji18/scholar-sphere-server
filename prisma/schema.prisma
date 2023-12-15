@@ -31,12 +31,12 @@ model Post {
   id          String      @id @default(uuid())
   title       String
   description String?
-  user        User?       @relation(fields: [userId], references: [id])
+  user        User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String?
   contentUrls ImageUrls[]
   comments    Comments[]
-  savedPosts  User[]      @relation("SavedPosts")
-  likedPosts  User[]      @relation("LikedPosts")
+  saved       User[]      @relation("SavedPosts")
+  liked       User[]      @relation("LikedPosts")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -54,7 +54,7 @@ model Comments {
 
 model ImageUrls {
   id        String   @id @default(uuid())
-  url       String
+  url       String?
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String?
   createdAt DateTime @default(now())

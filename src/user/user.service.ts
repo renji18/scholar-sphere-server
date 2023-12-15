@@ -10,7 +10,18 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async getUser(userName: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({ where: { userName } });
+    const user = await this.prisma.user.findUnique({
+      where: { userName },
+      include: {
+        comments: true,
+        followers: true,
+        followings: true,
+        posts: true,
+        likedPosts: true,
+        savedPosts: true,
+        _count: true,
+      },
+    });
     if (!user) throw new UnauthorizedException('Invalid Username provided');
     return user;
   }
@@ -18,14 +29,19 @@ export class UserService {
   async updateUser(
     userName: string,
     data: UpdateUserProfileDto,
-  ): Promise<{ user: User; message: string }> {
-    const user = await this.prisma.user.update({
+  ): Promise<{ message: string }> {
+    const user = await this.prisma.user.findUnique({
+      where: { userName },
+    });
+    if (!user) throw new UnauthorizedException('Invalid Username provided');
+
+    await this.prisma.user.update({
       where: {
         userName,
       },
       data,
     });
-    return { user, message: 'User Updated Successfully' };
+    return { message: 'User Updated Successfully' };
   }
 
   async resetPassword(
@@ -34,6 +50,8 @@ export class UserService {
     data: ResetPasswordDto,
   ): Promise<{ message: string }> {
     const user = await this.prisma.user.findUnique({ where: { userName } });
+    if (!user) throw new UnauthorizedException('Invalid Username provided');
+
     const isPasswordMatched = await bcrypt.compare(
       data?.password,
       user?.password,
