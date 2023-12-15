@@ -24,7 +24,7 @@ export class AuthService {
       user?.password,
     );
     if (!isPasswordMatched) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid userName or password');
     }
 
     const payload = { id: user?.id, username: user.userName };
