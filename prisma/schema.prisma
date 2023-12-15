@@ -11,17 +11,20 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
+  id         String     @id @default(uuid())
+  email      String     @unique
   name       String
-  userName   String   @unique
+  userName   String     @unique
   bio        String?
   password   String
-  followings User[]   @relation("UserFriends")
-  followers  User[]   @relation("UserFriends")
+  followings User[]     @relation("UserFriends")
+  followers  User[]     @relation("UserFriends")
   posts      Post[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  comments   Comments[]
+  savedPosts Post[]     @relation("SavedPosts")
+  likedPosts Post[]     @relation("LikedPosts")
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model Post {
@@ -31,22 +34,36 @@ model Post {
   user        User?       @relation(fields: [userId], references: [id])
   userId      String?
   contentUrls ImageUrls[]
+  comments    Comments[]
+  savedPosts  User[]      @relation("SavedPosts")
+  likedPosts  User[]      @relation("LikedPosts")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+}
+
+model Comments {
+  id        String   @id @default(uuid())
+  comment   String
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ImageUrls {
   id        String   @id @default(uuid())
   url       String
-  Post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model RevokedToken {
-  id    Int   @id @default(autoincrement())
-  token Bytes
+  id        Int      @id @default(autoincrement())
+  token     Bytes
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
